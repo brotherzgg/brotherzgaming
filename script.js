@@ -31,6 +31,8 @@ window.hasValidCache = hasValidCache;
 
 // Fetch mods data from the API (Global Helper)
 async function fetchModsData() {
+    console.log('=== fetchModsData called ===');
+
     // 1. Check for valid cache first
     const cachedData = localStorage.getItem(CONFIG.CACHE_KEY);
     const cachedTimestamp = localStorage.getItem(CONFIG.CACHE_TIMESTAMP_KEY);
@@ -40,77 +42,99 @@ async function fetchModsData() {
         const age = now - parseInt(cachedTimestamp);
 
         if (age < CONFIG.CACHE_DURATION) {
-            console.log('Returning valid cache');
-            return JSON.parse(cachedData);
+            console.log('✓ Returning valid cache (age:', Math.round(age / 1000), 'seconds)');
+            const parsed = JSON.parse(cachedData);
+            console.log('✓ Cache has', parsed.length, 'mods');
+            return parsed;
         }
+        console.log('Cache expired (age:', Math.round(age / 1000), 'seconds)');
+    } else {
+        console.log('No cache found');
     }
 
-    // 2. Try direct fetch
-    console.log('Attempting direct fetch from:', CONFIG.API_URL);
-    try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
+    // 2. Try fetch with simplified approach
+    console.log('Fetching from API:', CONFIG.API_URL);
 
-        console.log('Direct fetch response status:', response.status);
+    try {
+        const response = await fetch(CONFIG.API_URL);
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers.get('content-type'));
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
-        console.log('Direct fetch succeeded! Got', data.length, 'mods');
 
         if (!Array.isArray(data)) {
+            console.error('ERROR: Data is not an array!', typeof data);
             throw new Error('Invalid data format: expected array');
         }
+
+        console.log('✓ SUCCESS! Fetched', data.length, 'mods from API');
 
         // Update cache
         localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(data));
         localStorage.setItem(CONFIG.CACHE_TIMESTAMP_KEY, new Date().getTime().toString());
+        console.log('✓ Cache updated');
 
         return data;
+
     } catch (error) {
-        console.warn('Direct fetch failed, trying CORS proxy:', error);
+        console.error('✗ Direct fetch failed:', error.message);
 
-        console.log('Trying CORS proxy:', CONFIG.CORS_PROXY + encodeURIComponent(CONFIG.API_URL));
+        // 3. Try CORS proxy as fallback
+        console.log('Trying CORS proxy:', CONFIG.CORS_PROXY);
         try {
-            const response = await fetch(CONFIG.CORS_PROXY + encodeURIComponent(CONFIG.API_URL));
-            console.log('CORS proxy response status:', response.status);
+            const proxyUrl = CONFIG.CORS_PROXY + encodeURIComponent(CONFIG.API_URL);
+            console.log('  Full proxy URL:', proxyUrl);
 
-            if (!response.ok) throw new Error('CORS proxy fetch failed');
+            const proxyResponse = await fetch(proxyUrl);
+            console.log('  Proxy response status:', proxyResponse.status);
 
-            const data = await response.json();
-            console.log('CORS proxy raw data:', data);
-
-            // allorigins returns data in 'contents' field, usually as a string
-            const parsedData = JSON.parse(data.contents);
-            console.log('CORS proxy succeeded! Got', parsedData.length, 'mods');
-
-            if (!Array.isArray(parsedData)) {
-                throw new Error('Invalid data format from proxy');
+            if (!proxyResponse.ok) {
+                throw new Error(`Proxy HTTP ${proxyResponse.status}`);
             }
+
+            const proxyData = await proxyResponse.json();
+
+            // allorigins wraps data in { contents: "..." }
+            let finalData;
+            if (proxyData.contents) {
+                console.log('  Parsing contents from proxy wrapper');
+                finalData = JSON.parse(proxyData.contents);
+            } else {
+                finalData = proxyData;
+            }
+
+            if (!Array.isArray(finalData)) {
+                console.error('ERROR: Proxy data is not an array!', typeof finalData);
+                throw new Error('Invalid proxy data format');
+            }
+
+            console.log('✓ CORS PROXY SUCCESS! Got', finalData.length, 'mods');
 
             // Update cache
-            localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(parsedData));
+            localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(finalData));
             localStorage.setItem(CONFIG.CACHE_TIMESTAMP_KEY, new Date().getTime().toString());
+            console.log('✓ Cache updated from proxy');
 
-            return parsedData;
-        } catch (corsError) {
-            console.error('CORS proxy failed:', corsError);
-            console.warn('Both direct and CORS proxy fetch failed!');
+            return finalData;
 
-            // Try to return stale cache if available (even if expired)
+        } catch (proxyError) {
+            console.error('✗ CORS proxy ALSO failed:', proxyError.message);
+
+            // Try to return stale cache if available
             if (cachedData) {
-                console.log('Returning stale cache due to error');
-                return JSON.parse(cachedData);
+                console.warn('⚠ Returning STALE cache as fallback');
+                const parsed = JSON.parse(cachedData);
+                console.log('  Stale cache has', parsed.length, 'mods');
+                return parsed;
             }
 
-            console.warn('No cache available, using fallback data (6 mods only)');
+            console.error('✗ NO CACHE AVAILABLE - Using hardcoded fallback (6 mods only)');
+            console.error('  This is why you only see 6 items!');
             return getFallbackData();
         }
     }
