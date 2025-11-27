@@ -46,6 +46,7 @@ async function fetchModsData() {
     }
 
     // 2. Try direct fetch
+    console.log('Attempting direct fetch from:', CONFIG.API_URL);
     try {
         const response = await fetch(CONFIG.API_URL, {
             method: 'GET',
@@ -55,11 +56,14 @@ async function fetchModsData() {
             }
         });
 
+        console.log('Direct fetch response status:', response.status);
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log('Direct fetch succeeded! Got', data.length, 'mods');
 
         if (!Array.isArray(data)) {
             throw new Error('Invalid data format: expected array');
@@ -73,13 +77,19 @@ async function fetchModsData() {
     } catch (error) {
         console.warn('Direct fetch failed, trying CORS proxy:', error);
 
+        console.log('Trying CORS proxy:', CONFIG.CORS_PROXY + encodeURIComponent(CONFIG.API_URL));
         try {
             const response = await fetch(CONFIG.CORS_PROXY + encodeURIComponent(CONFIG.API_URL));
+            console.log('CORS proxy response status:', response.status);
+
             if (!response.ok) throw new Error('CORS proxy fetch failed');
 
             const data = await response.json();
+            console.log('CORS proxy raw data:', data);
+
             // allorigins returns data in 'contents' field, usually as a string
             const parsedData = JSON.parse(data.contents);
+            console.log('CORS proxy succeeded! Got', parsedData.length, 'mods');
 
             if (!Array.isArray(parsedData)) {
                 throw new Error('Invalid data format from proxy');
@@ -91,7 +101,8 @@ async function fetchModsData() {
 
             return parsedData;
         } catch (corsError) {
-            console.warn('CORS proxy failed, trying cache/fallback:', corsError);
+            console.error('CORS proxy failed:', corsError);
+            console.warn('Both direct and CORS proxy fetch failed!');
 
             // Try to return stale cache if available (even if expired)
             if (cachedData) {
@@ -99,6 +110,7 @@ async function fetchModsData() {
                 return JSON.parse(cachedData);
             }
 
+            console.warn('No cache available, using fallback data (6 mods only)');
             return getFallbackData();
         }
     }
@@ -245,17 +257,36 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
             });
         }
 
+        // Utility functions (local to IIFE)
+        function sanitizeText(text) {
+            if (typeof text !== 'string') return 'Unknown';
+            return text.replace(/[<>]/g, '').trim().substring(0, 200);
+        }
+
+        function validateImageUrl(url) {
+            if (!url || typeof url !== 'string' || url === 'Null') {
+                return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+            }
+            try {
+                new URL(url);
+                return url;
+            } catch {
+                return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+            }
+        }
+
         // Create Recommended Card (matches CSS .recommended-card structure)
         function createRecommendedCard(mod, index) {
-            const card = document.createElement('a');
-            card.href = `download.html?mod=${index}`;
-            card.className = 'recommended-card';
+            try {
+                const card = document.createElement('a');
+                card.href = `download.html?mod=${index}`;
+                card.className = 'recommended-card';
 
-            const name = sanitizeText(mod.Name || 'Unknown Mod');
-            const category = sanitizeText(mod.Category || 'General');
-            const imageUrl = validateImageUrl(mod.Image);
+                const name = sanitizeText(mod.Name || 'Unknown Mod');
+                const category = sanitizeText(mod.Category || 'General');
+                const imageUrl = validateImageUrl(mod.Image);
 
-            card.innerHTML = `
+                card.innerHTML = `
                 <div class="recommended-image-container">
                     <img src="${imageUrl}" alt="${name}" class="recommended-image" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
                 </div>
@@ -266,7 +297,11 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
                 </div>
             `;
 
-            return card;
+                return card;
+            } catch (error) {
+                console.error('Error creating recommended card:', error, mod);
+                return document.createElement('div'); // Return empty div on error
+            }
         }
 
 
