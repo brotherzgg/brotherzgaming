@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod Collection - Game Mods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        (function () {
+            try {
+                const cachedData = localStorage.getItem('mods_data_cache');
+                const cachedTimestamp = localStorage.getItem('mods_data_timestamp');
+                if (cachedData && cachedTimestamp) {
+                    const now = new Date().getTime();
+                    const age = now - parseInt(cachedTimestamp);
+                    if (age < 60000) {
+                        const style = document.createElement('style');
+                        style.textContent = '#global-loader { display: none !important; } #content-wrapper { opacity: 1 !important; transform: none !important; } body.loading-active { overflow: auto !important; }';
+                        document.head.appendChild(style);
+                    }
+                }
+            } catch (e) { }
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="loading-overlay" id="global-loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="content-wrapper" id="content-wrapper">
+        <header class="header">
+            <nav class="nav container">
+                <a href="index.html" class="logo">Mod Collection</a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link active">Home</a>
+                    <a href="category.html" class="nav-link">Categories</a>
+                    <a href="about.html" class="nav-link">About Us</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="main">
+            <div class="container">
+                <!-- Removed internal loading spinner as we have global overlay -->
+
+                <section class="section">
+                    <div class="container">
+                        <div class="section-header">
+                            <h2 class="section-title">Recommended</h2>
+                        </div>
+                        <div class="recommended-container" id="recommended-container">
+                            <!-- Recommended mods will be inserted here -->
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <div class="container">
+                        <div class="section-header">
+                            <h2 class="section-title">Newest Additions</h2>
+                            <a href="category.html?sort=newest" class="view-all">See All</a>
+                        </div>
+                        <div class="mods-grid" id="newest-container">
+                            <!-- Newest mods will be inserted here -->
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <div class="container">
+                        <div class="section-header">
+                            <h2 class="section-title">Popular Games</h2>
+                            <a href="category.html?cat=Games" class="view-all">See All</a>
+                        </div>
+                        <div class="mods-grid" id="games-container">
+                            <!-- Game mods will be inserted here -->
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section">
+                    <div class="container">
+                        <div class="section-header">
+                            <h2 class="section-title">Essential Apps</h2>
+                            <a href="category.html?cat=Apps" class="view-all">See All</a>
+                        </div>
+                        <div class="mods-grid" id="apps-container">
+                            <!-- App mods will be inserted here -->
+                        </div>
+                    </div>
+                </section>
+                <div class="error" id="error" style="display: none;">
+                    <h3>Oops! Something went wrong</h3>
+                    <p>Unable to load mod data. Please try again later.</p>
+                    <button class="retry-btn" onclick="loadMods()">Retry</button>
+                </div>
+            </div>
+        </main>
+    </div> <!-- End content-wrapper -->
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Mod Collection. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" class="social-link" aria-label="Twitter">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M22 5.8C21.2 6.15 20.4 6.38 19.5 6.5C20.4 6 21.1 5.2 21.4 4.2C20.6 4.7 19.7 5 18.7 5.2C17.9 4.4 16.8 4 15.7 4C13.6 4 11.9 5.7 11.9 7.8C11.9 8.1 11.9 8.4 12 8.7C8.8 8.5 5.9 7 4 4.6C3.7 5.2 3.5 5.8 3.5 6.5C3.5 7.8 4.2 9 5.2 9.7C4.6 9.7 4 9.5 3.5 9.2V9.3C3.5 11.1 4.8 12.6 6.5 13C6.2 13.1 5.9 13.1 5.6 13.1C5.3 13.1 5.1 13.1 4.9 13C5.4 14.5 6.8 15.6 8.5 15.6C7.2 16.6 5.6 17.2 3.8 17.2C3.5 17.2 3.2 17.2 2.9 17.1C4.6 18.2 6.6 18.9 8.7 18.9C15.7 18.9 19.5 13.1 19.5 8.1V7.6C20.3 7 21 6.3 21.6 5.4L22 5.8Z" />
+                    </svg>
+                </a>
+                <a href="#" class="social-link" aria-label="Discord">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18.9 5.8C17.5 5.1 16 4.6 14.4 4.4C14.2 4.7 14 5.1 13.8 5.5C12.2 5.3 10.6 5.3 9 5.5C8.8 5.1 8.6 4.7 8.4 4.4C6.8 4.6 5.3 5.1 3.9 5.8C1.1 10 0.3 14.1 0.7 18.1C2.4 19.4 4.1 20.2 5.7 20.7C6.1 20.1 6.5 19.5 6.8 18.9C6.2 18.6 5.6 18.3 5.1 18C5.2 17.9 5.4 17.7 5.5 17.6C8.8 19.1 12.4 19.1 15.6 17.6C15.8 17.8 15.9 17.9 16.1 18C15.5 18.3 14.9 18.7 14.3 18.9C14.7 19.5 15.1 20.1 15.4 20.7C17.1 20.2 18.7 19.4 20.5 18.1C21 13.6 19.8 9.5 18.9 5.8ZM7.6 15.3C6.6 15.3 5.8 14.4 5.8 13.3C5.8 12.2 6.6 11.3 7.6 11.3C8.6 11.3 9.4 12.2 9.4 13.3C9.4 14.4 8.6 15.3 7.6 15.3ZM15.2 15.3C14.2 15.3 13.4 14.4 13.4 13.3C13.4 12.2 14.2 11.3 15.2 11.3C16.2 11.3 17 12.2 17 13.3C17 14.4 16.2 15.3 15.2 15.3Z" />
+                    </svg>
+                </a>
+                <a href="#" class="social-link" aria-label="GitHub">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2C6.5 2 2 6.5 2 12C2 16.4 4.8 20.2 8.8 21.5C9.3 21.6 9.5 21.3 9.5 20.9C9.5 20.6 9.5 19.8 9.5 18.7C6.8 19.3 6.2 17.4 6.2 17.4C5.8 16.3 5.2 16 5.2 16C4.3 15.4 5.3 15.4 5.3 15.4C6.3 15.5 6.8 16.4 6.8 16.4C7.7 17.9 9.1 17.5 9.6 17.3C9.7 16.6 10 16.2 10.3 15.9C8.1 15.7 5.8 14.8 5.8 10.8C5.8 9.7 6.2 8.7 6.8 8C6.7 7.7 6.4 6.7 6.9 5.5C6.9 5.5 7.7 5.2 9.6 6.5C10.4 6.3 11.2 6.2 12 6.2C12.8 6.2 13.6 6.3 14.4 6.5C16.3 5.2 17.1 5.5 17.1 5.5C17.6 6.7 17.3 7.7 17.2 8C17.8 8.7 18.2 9.7 18.2 10.8C18.2 14.8 15.9 15.7 13.7 15.9C14.1 16.3 14.5 17 14.5 18.2C14.5 19.9 14.5 21.3 14.5 21.6C14.5 21.9 14.7 22.2 15.2 22.1C19.2 20.8 22 16.9 22 12.5C22 7 17.5 2.5 12 2.5V2Z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js?v=3"></script>
+</body>
+
+</html>
