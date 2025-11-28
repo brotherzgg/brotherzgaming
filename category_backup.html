@@ -114,13 +114,12 @@
                                 </defs>
                             </svg>
                         </div>
-                        <h2 class="error-title">Service Temporarily Unavailable</h2>
-                        <p class="error-message">We apologize for the inconvenience. The content could not be retrieved
-                            at this time. This may be due to a temporary network connectivity issue or service
-                            maintenance. Please try again in a few moments.</p>
+                        <h2 class="error-title">Data Loading Failed</h2>
+                        <p class="error-message">We were unable to retrieve the mod collection data. This may be due to
+                            a network connectivity issue or temporary service unavailability. Please check your internet
+                            connection and try again.</p>
                         <div class="error-actions">
-                            <button class="retry-btn-primary"
-                                onclick="localStorage.clear(); window.location.reload(true);">
+                            <button class="retry-btn-primary" onclick="location.reload()">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -170,7 +169,7 @@
         </div>
     </footer>
 
-    <script src="script.js?v=8"></script>
+    <script src="script.js?v=9"></script>
 </body>
 
 </html>

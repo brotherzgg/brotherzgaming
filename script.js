@@ -1,6 +1,6 @@
 // Configuration
 const CONFIG = {
-    API_URL: 'https://pixlcore.pages.dev/Mod_Data.json',
+    API_URL: 'https://pixlcore.pages.dev/Mod_Datas.json',
     CORS_PROXY: 'https://api.allorigins.win/get?url=',
     CORS_PROXY: 'https://api.allorigins.win/get?url=',
     // LOADING_DELAY removed for seamless experience
@@ -133,9 +133,9 @@ async function fetchModsData() {
                 return parsed;
             }
 
-            console.error('✗ NO CACHE AVAILABLE - Using hardcoded fallback (6 mods only)');
-            console.error('  This is why you only see 6 items!');
-            return getFallbackData();
+            console.error('✗ NO CACHE AVAILABLE - Unable to fetch data');
+            console.error('  All fetch methods failed. Showing error to user.');
+            return null; // Return null to trigger error display
         }
     }
 };
@@ -184,6 +184,14 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
             try {
                 // Add minimum loading time for better UX
                 const data = await fetchModsData();
+
+                // Check if data fetch failed completely
+                if (!data || !Array.isArray(data) || data.length === 0) {
+                    console.error('No data returned from fetchModsData');
+                    hideLoading();
+                    showError();
+                    return;
+                }
 
                 globalModsData = data;
                 const usedMods = new Set();
@@ -447,82 +455,9 @@ function formatDate(dateString) {
     }
 }
 
-// Fallback data in case all fetching methods fail
-function getFallbackData() {
-    return [
-        {
-            "Name": "Great Conqueror 2 Shogun",
-            "Category": "Strategy",
-            "Image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhT2u3ZpZKq_hgjVk5pYovLyweFfZ0ZYOCTobGg2j7hyphenhyphensBqnMBFNaiXHHvff4f9uueFEbPF4ns9GcwUScLGLvVsSYxNpGO1kdW0ShyF4K3l6IzSpQv78-OyeanM5ejAbvgzkL20ZmdABfMvf_y9FGRJpNfHacjW6dnPJUpUftI66O_4LKhEEDMDJ3AUXyIB/w680/unnamed%20(1).webp",
-            "Description": "Great Conqueror 2 Shogun is an epic strategy game taking place during the chaotic Sengoku Era of Japan, where you will play the role of a fearless warrior Shogun and will observe an entire historical era, its ups and downs, military confrontations, the spirit of competition and conflict situations, power struggles and historical battles.",
-            "M": "Unlimited Coins\nUnlimited Ban-Kin",
-            "U": "November 25, 2023",
-            "V": "1.0.8",
-            "Link": "https://www.mediafire.com/file/sx3qns830hsfve0/Great_Conqueror_2_Shogun_1.0.8_Mod_By_Brotherz_Gaming.apk/file",
-            "Size": "649.77"
-        },
-        {
-            "Name": "Vector 2 Premium",
-            "Category": "Arcade",
-            "Image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiX6R4IPx5Mo74ne8FM2SqDdGgj6O1JsXkx7c-u837JOXHF9-DD2UxgrjoP70pVXvvCQigtd18wkp5r2CEEpDv6vMbPIb2e0zlh46XYma5nFaV-uCsADD2XSF-bJiOcQ96pfctXbVFIoUTbm6VdwwCVjZi9ZEm-AfVt0zZ_7zYfCY7Tbm2QoSTzLu7BArrs/w680/vector-2-premium.webp",
-            "Description": "The continuation of an incredible game about the parkourist, behind whom people from the scientific complex are chasing. The protagonist must pass many tests to become an agent in spec service.",
-            "M": "Unlimited Money",
-            "Note": "You Can Buy Anything With 0 Cost",
-            "U": "November 12, 2023",
-            "V": "1.2.1",
-            "Link": "https://www.mediafire.com/file/oaqrmsepalgkn7x/Vector_2_Premium_1.2.1_Mod_By_Brotherz_Gaming.apk/file",
-            "Size": "125.66"
-        },
-        {
-            "Name": "Fortress Under Siege HD",
-            "Category": "Strategy",
-            "Image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiIs03buSxp1zHvRIhDS2p-F7u7A9pkfP2Pxx4kmQ2K66m7C7JCd78qOxP1Y_SPV_9qBi5PPf0nPvyurz5z_0vY06IFx9aDYqF_xRY_HjxlrypkX7HbQLdqHsaaphR8q3KUd5Y1y1qxcCHwwfpLHyQRDTV9VVcLc8hWkVqU9rw6mJGmW3-hs3kBD3TDva4h/w680/unnamed.webp",
-            "Description": "A strategy game that will take the player into the epicenter of a large-scale confrontation. The user will have to participate in the battle for the protection of his own Kingdom from the treacherous attack of the enemy.",
-            "M": "Unlimited Money",
-            "U": "September 29, 2023",
-            "V": "1.4.6",
-            "Link": "https://www.mediafire.com/file/rm7g9xqux08m9wb/Fortress_Under_Siege_1.4.6_Mod_By_Brotherz_Gaming.apk/file",
-            "Size": "46.53"
-        },
-        {
-            "Name": "Glory Of Generals Pacific HD",
-            "Category": "Strategy",
-            "Image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWz90PPGuawfAZCjXIdOugY2EorkvNUpVKfAvdgM_MZpLTikIYCmPXLEPQFxzG7uCB6lmsOsX3ZXX4Fl1KboGRDaoSyBoV5vjzrCY4fy19EBBd9xcnF500YqZ3t96H6TNE7KPxhGHCRqIpn1ABdMxtXYqxPonIyq5YqMC6rOAiFprfg1ceQTRMgGeyWRsE/w680/unnamed.webp",
-            "Description": "A turn-based historical strategy game, offering players to take part in dozens of military battles that really took place within the various conflicts. The game will be in the Pacific, and the battle will affect the events of the Second World War.",
-            "M": "Unlimited Money\nUnlimited Medals",
-            "U": "October 15, 2023",
-            "V": "1.2.0",
-            "Link": "https://www.mediafire.com/file/example/Glory_Of_Generals_Pacific_HD.apk/file",
-            "Size": "89.45"
-        },
-        {
-            "Name": "X8 Sandbox",
-            "Category": "Tools",
-            "Image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiqRf1d4zq0whUrHop3hYSi9jCsRO4dU6x219ZiSIMqiafvAyysi1oopHmU6n4jCseU6qosQ/w680/ic_launcher_foreground.png",
-            "Description": "Most game modification tools require root access to Android phones. The X8 Sandbox is a tool that provides root access to applications commonly used to edit games.",
-            "M": "Null",
-            "U": "July 25, 2022",
-            "V": "0.7.6.2.09",
-            "Link": "https://www.mediafire.com/file/og9hjy4rcr1exu2/X8_Sandbox_0.7.6.2.09-64gp_By_Brotherz_Gaming.apk.apk/file",
-            "Size": "359.14"
-        },
-        {
-            "Name": "Adobe Photoshop Touch",
-            "Category": "Photography",
-            "Image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHhtZqwHG45GpS-h6GvmI0xqUEaB43yGDw8cXoUC3GECr3BMWo11c0glSEndG0UVbREdWzkd_xhjAjEt7jqAiwxun6WNhDsK_fpMVtSNEU8vIqvWZWvG4cV7VYMZ7xHEEljUwgMcrKjr8SDaIn-bUSWeOcfswABLf9lHUa99tn6voyH17B90voGdg6oA/w680/f592f9493c7b149d5b42e7c3c04edfc689ca89c7c5bdcce29feb249e92e6a89a_200.jpeg",
-            "Description": "Adobe Photoshop Touch is a mobile version of the popular graphics editor. Of course to a full analogue of the desktop version it does not hold, however, many useful features are still there.",
-            "M": "Null",
-            "U": "April 27, 2022",
-            "V": "1.7.7",
-            "Link": "Null",
-            "Size": "Null"
-        }
-    ];
-}
-
 // Add some basic error handling for image loading
 document.addEventListener('error', function (e) {
     if (e.target.tagName === 'IMG' && (e.target.classList.contains('mod-image') || e.target.classList.contains('featured-image'))) {
-        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE4MCI yeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQ yeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
     }
 }, true);
