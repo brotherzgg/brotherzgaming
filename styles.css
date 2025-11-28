@@ -812,6 +812,7 @@ body.loading-active {
     font-size: 1.5rem;
     cursor: pointer;
     padding: 5px;
+    z-index: 1001;
 }
 
 /* Tablet and Mobile Styles */
@@ -838,6 +839,8 @@ body.loading-active {
         min-width: 180px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        /* Above content */
     }
 
     .nav-links.active {
@@ -849,15 +852,40 @@ body.loading-active {
         border-radius: 0;
     }
 
-    /* Keep 2 items per row on tablet/mobile for better appearance */
-    .mods-grid {
-        grid-template-columns: repeat(2, 1fr);
+    /* Horizontal scroll for grids on mobile */
+    .mods-grid,
+    .recommended-container {
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
         gap: 15px;
+        padding-bottom: 10px;
     }
 
-    .recommended-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+    .mods-grid::-webkit-scrollbar,
+    .recommended-container::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .mods-grid::-webkit-scrollbar-track,
+    .recommended-container::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+
+    .mods-grid::-webkit-scrollbar-thumb,
+    .recommended-container::-webkit-scrollbar-thumb {
+        background: rgba(102, 126, 234, 0.5);
+        border-radius: 10px;
+    }
+
+    .mod-card,
+    .recommended-card {
+        flex: 0 0 280px;
+        /* Fixed width for consistent card size */
+        scroll-snap-align: start;
     }
 
     .section-title {
@@ -883,36 +911,27 @@ body.loading-active {
         padding: 30px 0;
     }
 
-    /* Keep 2 items per row even on small screens */
-    .mods-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .recommended-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
+    /* Horizontal scroll with slightly smaller cards on very small screens */
     .mod-card,
     .recommended-card {
-        border-radius: 16px;
+        flex: 0 0 260px;
+        /* Slightly smaller for very small screens */
     }
 
     .mod-title,
     .recommended-title {
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
 
     .mod-category,
     .recommended-category {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
     }
 
     .mod-download-btn,
     .recommended-btn {
-        font-size: 0.85rem;
-        padding: 8px 16px;
+        font-size: 0.9rem;
+        padding: 10px 18px;
     }
 }
 
