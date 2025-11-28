@@ -803,84 +803,116 @@ body.loading-active {
 }
 
 /* Responsive Adjustments */
+/* Mobile Menu Toggle */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Tablet and Mobile Styles */
 @media (max-width: 768px) {
-    .nav-links {
-        display: none;
-        /* Mobile menu to be implemented if needed, or keep simple */
+    .nav {
+        position: relative;
     }
 
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: rgba(15, 23, 42, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 15px 0;
+        border-radius: 12px;
+        margin-top: 10px;
+        min-width: 180px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-link {
+        padding: 12px 24px;
+        border-radius: 0;
+    }
+
+    /* Keep 2 items per row on tablet/mobile for better appearance */
     .mods-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 15px;
     }
 
     .recommended-container {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    }
-
-    .featured-image {
-        height: 250px;
-    }
-
-    .mod-card {
-        margin: 0 5px;
-    }
-
-    .mod-content {
-        padding: 20px;
-    }
-
-    .mod-name {
-        font-size: 1.2rem;
-    }
-
-    .mod-description {
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header {
-        padding: 40px 0;
-    }
-
-    .title {
-        font-size: 1.8rem;
-    }
-
-    .main {
-        padding: 40px 0;
-    }
-
-    .featured-name {
-        font-size: 1.8rem;
-    }
-
-    .featured-image {
-        height: 200px;
-    }
-
-    .featured-details {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .mods-grid {
+        grid-template-columns: repeat(2, 1fr);
         gap: 15px;
     }
 
-    .mod-card {
-        margin: 0;
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+    .header {
+        padding: 15px 0;
     }
 
-    .mod-content {
-        padding: 16px;
+    .logo {
+        font-size: 1.2rem;
     }
 
-    .mod-details {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .main {
+        padding: 30px 0;
+    }
+
+    /* Keep 2 items per row even on small screens */
+    .mods-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .recommended-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .mod-card,
+    .recommended-card {
+        border-radius: 16px;
+    }
+
+    .mod-title,
+    .recommended-title {
+        font-size: 0.95rem;
+    }
+
+    .mod-category,
+    .recommended-category {
+        font-size: 0.7rem;
+    }
+
+    .mod-download-btn,
+    .recommended-btn {
+        font-size: 0.85rem;
+        padding: 8px 16px;
     }
 }
 
