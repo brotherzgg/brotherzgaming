@@ -36,33 +36,16 @@
     </div>
 
     <div class="content-wrapper" id="content-wrapper">
-        <!-- Title Section (non-sticky) -->
         <header class="header">
-            <div class="container">
-                <h1 class="site-title">Brotherz Gaming</h1>
-            </div>
-        </header>
-
-        <!-- Sticky Navigation -->
-        <nav class="sticky-nav" id="stickyNav">
-            <div class="container">
-                <div class="nav-container">
-                    <div class="nav-links">
-                        <a href="index.html" class="nav-link active">Home</a>
-                        <a href="category.html" class="nav-link">Categories</a>
-                        <a href="about.html" class="nav-link">About Us</a>
-                    </div>
-                    <button class="search-btn" aria-label="Search">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        Search
-                    </button>
+            <nav class="nav container">
+                <a href="index.html" class="logo">Mod Collection</a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link active">Home</a>
+                    <a href="category.html" class="nav-link">Categories</a>
+                    <a href="about.html" class="nav-link">About Us</a>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        </header>
 
         <main class="main">
             <div class="container">
@@ -82,7 +65,8 @@
                 <section class="section">
                     <div class="container">
                         <div class="section-header">
-                            <a href="category.html?sort=newest" class="section-title clickable">Newest Additions</a>
+                            <h2 class="section-title">Newest Additions</h2>
+                            <a href="category.html?sort=newest" class="view-all">See All</a>
                         </div>
                         <div class="mods-grid" id="newest-container">
                             <!-- Newest mods will be inserted here -->
@@ -94,6 +78,7 @@
                     <div class="container">
                         <div class="section-header">
                             <h2 class="section-title">Popular Games</h2>
+                            <a href="category.html?cat=Games" class="view-all">See All</a>
                         </div>
                         <div class="mods-grid" id="games-container">
                             <!-- Game mods will be inserted here -->
@@ -105,6 +90,7 @@
                     <div class="container">
                         <div class="section-header">
                             <h2 class="section-title">Essential Apps</h2>
+                            <a href="category.html?cat=Apps" class="view-all">See All</a>
                         </div>
                         <div class="mods-grid" id="apps-container">
                             <!-- App mods will be inserted here -->
@@ -128,13 +114,12 @@
                                 </defs>
                             </svg>
                         </div>
-                        <h2 class="error-title">Service Temporarily Unavailable</h2>
-                        <p class="error-message">We apologize for the inconvenience. The content could not be retrieved
-                            at this time. This may be due to a temporary network connectivity issue or service
-                            maintenance. Please try again in a few moments.</p>
+                        <h2 class="error-title">Data Loading Failed</h2>
+                        <p class="error-message">We were unable to retrieve the mod collection data. This may be due to
+                            a network connectivity issue or temporary service unavailability. Please check your internet
+                            connection and try again.</p>
                         <div class="error-actions">
-                            <button class="retry-btn-primary"
-                                onclick="localStorage.clear(); window.location.reload(true);">
+                            <button class="retry-btn-primary" onclick="location.reload()">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -184,7 +169,7 @@
         </div>
     </footer>
 
-    <script src="script.js?v=8"></script>
+    <script src="script.js?v=9"></script>
 </body>
 
 </html>

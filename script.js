@@ -9,6 +9,22 @@ const CONFIG = {
     CACHE_DURATION: 60000 // 1 minute in ms
 };
 
+// Sticky Navigation
+window.addEventListener('DOMContentLoaded', () => {
+    const stickyNav = document.getElementById('stickyNav');
+    if (stickyNav) {
+        const navOffset = stickyNav.offsetTop;
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset >= navOffset) {
+                stickyNav.classList.add('is-sticky');
+            } else {
+                stickyNav.classList.remove('is-sticky');
+            }
+        });
+    }
+});
+
 // Global State (for data sharing if needed)
 let globalModsData = [];
 
