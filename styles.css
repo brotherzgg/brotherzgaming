@@ -169,27 +169,68 @@ body {
 
 @media (max-width: 480px) {
     .unified-nav {
-        padding: 0 10px;
+        padding: 8px 15px;
     }
 
+    /* Convert to two-row layout on mobile */
     .nav-inner {
-        height: 50px;
+        flex-wrap: wrap;
+        height: auto;
         gap: 8px;
+        padding: 0;
     }
 
-    .brand-icon {
-        width: 32px;
-        height: 32px;
+    /* First row: Brand takes full width */
+    .nav-brand {
+        width: 100%;
+        justify-content: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-text {
+        display: block;
         font-size: 1rem;
     }
 
-    .unified-nav .nav-link {
-        padding: 6px 10px;
+    .brand-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+
+    /* Second row: Nav links and search centered */
+    .unified-nav .nav-links {
+        flex: 1;
+        justify-content: center;
         gap: 4px;
     }
 
+    .unified-nav .nav-link {
+        padding: 8px 10px;
+        gap: 4px;
+        font-size: 0.8rem;
+    }
+
+    .unified-nav .nav-link svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Show text on mobile too for clarity */
     .unified-nav .nav-link span {
-        display: none;
+        display: inline;
+    }
+
+    .nav-search-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .nav-search-btn svg {
+        width: 18px;
+        height: 18px;
     }
 }
 
