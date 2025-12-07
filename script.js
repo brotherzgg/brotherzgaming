@@ -9,21 +9,66 @@ const CONFIG = {
     CACHE_DURATION: 60000 // 1 minute in ms
 };
 
-// Sticky Navigation
-window.addEventListener('DOMContentLoaded', () => {
-    const stickyNav = document.getElementById('stickyNav');
-    if (stickyNav) {
-        const navOffset = stickyNav.offsetTop;
+// Page Transition Handling
+(function () {
+    const contentWrapper = document.getElementById('content-wrapper');
 
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset >= navOffset) {
-                stickyNav.classList.add('is-sticky');
-            } else {
-                stickyNav.classList.remove('is-sticky');
-            }
-        });
+    // Function to animate content in
+    function animateIn() {
+        if (contentWrapper) {
+            // Reset classes first
+            contentWrapper.classList.remove('page-exit');
+            // Small delay to ensure CSS is ready
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    contentWrapper.classList.add('visible');
+                });
+            });
+        }
     }
-});
+
+    // Handle initial page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', animateIn);
+    } else {
+        animateIn();
+    }
+
+    // Handle browser back/forward navigation (bfcache)
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            // Page was restored from bfcache
+            animateIn();
+        }
+    });
+
+    // Handle navigation link clicks for smooth transitions
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+
+                // Skip if it's the current page or external link
+                if (!href || href.startsWith('#') || href.startsWith('http') || this.classList.contains('active')) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                // Trigger exit animation
+                if (contentWrapper) {
+                    contentWrapper.classList.remove('visible');
+                    contentWrapper.classList.add('page-exit');
+                }
+
+                // Navigate after animation completes
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 300);
+            });
+        });
+    });
+})();
 
 // Global State (for data sharing if needed)
 let globalModsData = [];
@@ -216,14 +261,14 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
                 // We process this first to ensure the newest items are always shown here
                 let newestMods = [];
                 if (newestContainer) {
-                    newestMods = data.slice(0, 8);
+                    newestMods = data.slice(0, 12);
                     newestMods.forEach(mod => usedMods.add(mod));
                 }
 
                 // 2. Recommended Section (Randomized, Unique)
                 let recommendedMods = [];
                 if (recommendedContainer) {
-                    recommendedMods = getUniqueRandomMods(data, 8, usedMods);
+                    recommendedMods = getUniqueRandomMods(data, 12, usedMods);
                 }
 
                 // 3. Popular Games (Randomized, Unique)
@@ -233,7 +278,7 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
                     const genericGameMods = data.filter(mod => mod.Category !== 'Tools' && mod.Category !== 'Photography' && mod.Category !== 'Productivity');
                     const source = allGameMods.length > 0 ? allGameMods : genericGameMods;
 
-                    gameMods = getUniqueRandomMods(source, 8, usedMods);
+                    gameMods = getUniqueRandomMods(source, 12, usedMods);
                 }
 
                 // 4. Essential Apps (Unique)
@@ -241,7 +286,7 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
                 if (appsContainer) {
                     const allAppMods = data.filter(mod => mod.Category === 'Tools' || mod.Category === 'Photography' || mod.Category === 'Productivity' || mod.Category === 'Social');
                     // Get first 8 available apps that haven't been shown yet
-                    appMods = allAppMods.filter(mod => !usedMods.has(mod)).slice(0, 8);
+                    appMods = allAppMods.filter(mod => !usedMods.has(mod)).slice(0, 12);
                     appMods.forEach(mod => usedMods.add(mod));
                 }
 
@@ -256,6 +301,9 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
                 if (recommendedContainer) renderRecommended(recommendedMods);
                 if (gamesContainer) renderGrid(gamesContainer, gameMods);
                 if (appsContainer) renderGrid(appsContainer, appMods);
+
+                // Adjust grid items for desktop to show equal rows
+                adjustGridItemsForDesktop();
 
                 hideLoading();
 
@@ -419,6 +467,68 @@ if (document.getElementById('featuredSection') || document.getElementById('recom
         function hideError() {
             if (errorElement) errorElement.style.display = 'none';
         }
+
+        // Adjust grid items to show equal rows on desktop only
+        function adjustGridItemsForDesktop() {
+            // Only apply on desktop (> 480px)
+            if (window.innerWidth <= 480) {
+                // On mobile, show all items (horizontal scroll)
+                resetAllCardVisibility();
+                return;
+            }
+
+            const grids = [
+                { container: newestContainer, selector: '.mod-card' },
+                { container: gamesContainer, selector: '.mod-card' },
+                { container: appsContainer, selector: '.mod-card' },
+                { container: recommendedContainer, selector: '.recommended-card' }
+            ];
+
+            grids.forEach(({ container, selector }) => {
+                if (!container) return;
+
+                const cards = container.querySelectorAll(selector);
+                if (cards.length === 0) return;
+
+                // Reset visibility first
+                cards.forEach(card => card.style.display = '');
+
+                // Calculate how many cards fit in one row
+                const containerWidth = container.offsetWidth;
+                const firstCard = cards[0];
+                const cardWidth = firstCard.offsetWidth;
+                const gap = parseFloat(window.getComputedStyle(container).gap) || 20;
+
+                // Calculate cards per row (minimum 4 to ensure at least 8 items shown)
+                const actualCardsPerRow = Math.floor((containerWidth + gap) / (cardWidth + gap));
+                const cardsPerRow = Math.max(4, actualCardsPerRow);
+
+                // Always show 2 complete rows (minimum 8 items)
+                const itemsToShow = cardsPerRow * 2;
+
+                // Hide excess cards
+                cards.forEach((card, index) => {
+                    if (index >= itemsToShow) {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Reset all card visibility (for mobile)
+        function resetAllCardVisibility() {
+            const allCards = document.querySelectorAll('.mod-card, .recommended-card');
+            allCards.forEach(card => card.style.display = '');
+        }
+
+        // Handle window resize with debounce
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                adjustGridItemsForDesktop();
+            }, 150);
+        });
 
     })();
 }

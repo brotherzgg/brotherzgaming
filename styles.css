@@ -19,6 +19,182 @@ body {
     padding: 0 20px;
 }
 
+/* ===== UNIFIED NAVIGATION BAR ===== */
+.unified-nav {
+    background: rgba(15, 15, 35, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    padding: 0 20px;
+}
+
+.nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    gap: 40px;
+}
+
+/* Brand/Logo */
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #00d26a 0%, #00a854 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.brand-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.3px;
+}
+
+/* Navigation Links */
+.unified-nav .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+}
+
+.unified-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.unified-nav .nav-link svg {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.unified-nav .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.unified-nav .nav-link:hover svg {
+    opacity: 1;
+}
+
+.unified-nav .nav-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.unified-nav .nav-link.active svg {
+    opacity: 1;
+    stroke: #00d26a;
+}
+
+/* Search Button */
+.nav-search-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.nav-search-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-search-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .nav-inner {
+        gap: 15px;
+    }
+
+    .brand-text {
+        display: none;
+    }
+
+    .unified-nav .nav-link {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    .unified-nav .nav-link svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .unified-nav {
+        padding: 0 10px;
+    }
+
+    .nav-inner {
+        height: 50px;
+        gap: 8px;
+    }
+
+    .brand-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .unified-nav .nav-link {
+        padding: 6px 10px;
+        gap: 4px;
+    }
+
+    .unified-nav .nav-link span {
+        display: none;
+    }
+}
+
+/* ===== END UNIFIED NAVIGATION BAR ===== */
+
 /* Header styles - Non-sticky title section */
 .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -552,7 +728,7 @@ body {
 /* Recommended Section - Exactly same as mods-grid */
 .recommended-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
     margin-bottom: 40px;
 }
@@ -665,7 +841,7 @@ body {
 /* Standard Mod Cards (Unified Wide Grid) */
 .mods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     /* Wider cards everywhere */
     gap: 20px;
     margin-bottom: 40px;
@@ -1071,7 +1247,7 @@ body.loading-active {
 
     .mod-card,
     .recommended-card {
-        flex: 0 0 200px;
+        flex: 0 0 160px;
         /* Smaller cards on mobile */
         scroll-snap-align: start;
     }
@@ -1106,7 +1282,7 @@ body.loading-active {
     /* Smaller cards on very small screens */
     .mod-card,
     .recommended-card {
-        flex: 0 0 180px;
+        flex: 0 0 160px;
     }
 
     .mod-title,

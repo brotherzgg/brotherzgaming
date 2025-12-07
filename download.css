@@ -1,12 +1,11 @@
-/* Download Page Specific Styles - 5play Style */
+/* Download Page Specific Styles */
 
 /* Container */
 .download-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 40px 20px;
-    font-family: 'Inter', sans-serif;
-    /* Ensure clean font */
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Hero Section */
@@ -92,24 +91,22 @@
 }
 
 .action-btn-download {
-    background: #00dc82;
-    /* 5play Green */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
-    font-weight: 700;
+    font-weight: 600;
     padding: 14px 32px;
-    border-radius: 8px;
-    /* Slightly rounded */
+    border-radius: 10px;
     text-decoration: none;
     font-size: 1rem;
     transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .action-btn-download:hover {
-    background: #00c474;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 220, 130, 0.3);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 .action-icons {
@@ -212,10 +209,10 @@
     text-transform: uppercase;
 }
 
-/* Content Body */
+/* Content Body - Full Width */
 .content-body {
-    max-width: 800px;
-    /* Limit width for readability */
+    max-width: 100%;
+    width: 100%;
 }
 
 .content-tabs {
@@ -252,12 +249,35 @@
     margin-bottom: 15px;
 }
 
+/* Collapsible description */
+.description-wrapper {
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    overflow: hidden;
+}
+
+.description-wrapper.collapsed {
+    max-height: 100px;
+    position: relative;
+}
+
+.description-wrapper.collapsed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, #0f0f23);
+    pointer-events: none;
+}
+
 .mod-features {
-    margin-top: 30px;
-    background: rgba(255, 255, 255, 0.03);
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: rgba(102, 126, 234, 0.1);
     padding: 20px;
     border-radius: 12px;
-    border-left: 3px solid #00dc82;
+    border-left: 3px solid #667eea;
 }
 
 .mod-features h3 {
@@ -266,12 +286,37 @@
     font-size: 1.1rem;
 }
 
+/* More button styling */
 .more-view-btn {
     display: inline-block;
-    color: #00dc82;
-    text-decoration: none;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    padding: 8px 20px;
+    border-radius: 20px;
     font-weight: 600;
-    margin-top: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.more-view-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.5);
+}
+
+/* Genre link styling */
+.genre-link {
+    color: #667eea;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.genre-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
 }
 
 /* Download Section */

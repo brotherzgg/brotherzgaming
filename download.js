@@ -77,6 +77,10 @@
             console.log('Displaying details for mod:', mod);
             displayModDetails(mod);
             hideLoading();
+
+            // Setup event listeners after content is rendered
+            setupEventListeners();
+
             console.log('Finished loadModDetails');
 
         } catch (error) {
@@ -92,30 +96,33 @@
         // Use global utility functions from script.js
         const name = sanitizeText(mod.Name || 'Unknown Mod');
         const category = sanitizeText(mod.Category || 'General');
-        const description = sanitizeText(mod.Description || 'No description available');
+        const description = mod.Description || 'No description available';
+        const fullDescription = description.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const imageUrl = validateImageUrl(mod.Image);
         const downloadUrl = mod.Link && mod.Link !== 'Null' ? mod.Link : '#';
         const version = sanitizeText(mod.V || 'Unknown');
         const size = mod.Size && mod.Size !== 'Null' ? formatFileSize(mod.Size) : 'Unknown';
         const modifications = mod.M && mod.M !== 'Null' ? sanitizeText(mod.M) : null;
         const updateDate = mod.U && mod.U !== 'Null' ? formatDate(mod.U) : 'Unknown';
-        const note = mod.Note ? sanitizeText(mod.Note) : null;
+
+        // Generate the download filename
+        const downloadFileName = `${name} ${version} Mod By Brotherz Gaming.apk`;
 
         if (!downloadPageElement) return;
 
         downloadPageElement.innerHTML = `
             <div class="download-container">
-                <!-- Hero Section: 5play Style -->
+                <!-- Hero Section -->
                 <div class="app-hero">
                     <!-- Left Column: Info -->
                     <div class="app-info-column">
                         <div class="app-breadcrumbs">
-                            <a href="index.html">Games</a> <span class="separator">/</span> <span>${category}</span>
+                            <a href="index.html">Games</a> <span class="separator">/</span> <a href="category.html?cat=${encodeURIComponent(category)}" class="genre-link">${category}</a>
                         </div>
                         
                         <h1 class="app-title">${name}</h1>
                         
-                        <!-- Specific Metadata Grid (Row) -->
+                        <!-- Metadata Grid -->
                         <div class="app-meta-row">
                             <div class="meta-box">
                                 <span class="meta-label">Updated</span>
@@ -126,50 +133,32 @@
                                 <span class="meta-value">${version}</span>
                             </div>
                             <div class="meta-box">
-                                <span class="meta-label">Requirements</span>
-                                <span class="meta-value">Android 5.0+</span>
+                                <span class="meta-label">Size</span>
+                                <span class="meta-value">${size}</span>
                             </div>
                             <div class="meta-box">
                                 <span class="meta-label">Genre</span>
-                                <span class="meta-value">${category}</span>
-                            </div>
-                            <div class="meta-box">
-                                <span class="meta-label">Price</span>
-                                <span class="meta-value">Free</span>
+                                <span class="meta-value"><a href="category.html?cat=${encodeURIComponent(category)}" class="genre-link">${category}</a></span>
                             </div>
                         </div>
 
+                        ${modifications ? `
+                            <div class="mod-features">
+                                <h3>Mod Features:</h3>
+                                <p>${modifications.replace(/\n/g, '<br>')}</p>
+                            </div>
+                        ` : ''}
+
                         <!-- Action Bar -->
                         <div class="app-actions">
-                            <a href="#download-block" class="action-btn-download">
-                                Download APK
+                            <a href="${downloadUrl}" class="action-btn-download" ${downloadUrl === '#' ? 'onclick="event.preventDefault(); alert(\'Download link not available\');"' : ''} target="_blank" rel="noopener noreferrer">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download APK (${size})
                             </a>
-                            <div class="action-icons">
-                                <button class="icon-btn" title="Share">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-                                    <span>Share</span>
-                                </button>
-                                <button class="icon-btn" title="Update">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                                    <span>Update</span>
-                                </button>
-                                <button class="icon-btn" title="Bookmark">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                                    <span>To bookmarks</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Stats (Mocked for visual match) -->
-                        <div class="app-stats">
-                            <div class="stat-item like">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                                <span>+7032</span>
-                            </div>
-                            <div class="stat-item dislike">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path></svg>
-                                <span>-2555</span>
-                            </div>
                         </div>
                     </div>
 
@@ -177,59 +166,49 @@
                     <div class="app-image-column">
                         <div class="app-icon-wrapper">
                             <img src="${imageUrl}" alt="${name}" class="app-icon-large" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
-                            <div class="platform-badge">ARM64</div>
                         </div>
                     </div>
                 </div>
 
-                <!--Content Body-- >
-            <div class="content-body">
-                <!-- Tabs (Visual only) -->
-                <div class="content-tabs">
-                    <button class="tab-btn active">Description</button>
-                    <button class="tab-btn">Help</button>
-                </div>
-
-                <div class="description-content">
-                    <p class="description-text">${description.replace(/\n/g, '</p><p>')}</p>
-
-                    ${modifications ? `
-                        <div class="mod-features">
-                            <h3>Mod Features:</h3>
-                            <p>${modifications.replace(/\n/g, '<br>')}</p>
-                        </div>
-                        ` : ''}
-
-                    <a href="#" class="more-view-btn">More view</a>
-                </div>
-
-                <!-- Distinct Download Block -->
-                <div id="download-block" class="download-section">
-                    <div class="download-tabs">
-                        <button class="dl-tab active">Files</button>
-                        <button class="dl-tab">Information</button>
+                <!-- Content Body (Full Width) -->
+                <div class="content-body">
+                    <!-- Description Section -->
+                    <div class="content-tabs">
+                        <button class="tab-btn active">Description</button>
                     </div>
 
-                    <div class="download-box">
-                        <h3 class="download-box-title">Download ${name} for Android for free</h3>
-                        <p class="download-subtitle">Mod - menu</p>
-
-                        <div class="download-item">
-                            <a href="${downloadUrl}" class="download-link-btn" ${downloadUrl === '#' ? 'onclick="event.preventDefault(); alert(\'Download link not available\');"' : ''} target="_blank" rel="noopener noreferrer">
-                                <span class="dl-name">${name.toLowerCase().replace(/\s+/g, '-')}-${version}-mod-menu.apk</span>
-                                <span class="dl-action">Download APK (${size})</span>
-                            </a>
+                    <div class="description-content">
+                        <div class="description-wrapper collapsed" id="descriptionWrapper">
+                            <p class="description-text">${fullDescription.replace(/\n/g, '</p><p>')}</p>
                         </div>
-
-                        <div class="download-footer">
-                            <p>Fast download — virus-free!</p>
-                            <p class="small-text">On our website, you can download the latest version of ${name} in APK format — fast and free! No sign-up or SMS</p>
-                        </div>
+                        
+                        <!-- More button below description -->
+                        <button class="more-view-btn" id="moreViewBtn">More...</button>
                     </div>
                 </div>
             </div>
-            </div >
             `;
+    }
+
+    // Setup event listeners for interactive elements
+    function setupEventListeners() {
+        // More button - expand/collapse description
+        const moreBtn = document.getElementById('moreViewBtn');
+        const descWrapper = document.getElementById('descriptionWrapper');
+
+        if (moreBtn && descWrapper) {
+            moreBtn.addEventListener('click', function () {
+                const isCollapsed = descWrapper.classList.contains('collapsed');
+
+                if (isCollapsed) {
+                    descWrapper.classList.remove('collapsed');
+                    moreBtn.textContent = 'Less...';
+                } else {
+                    descWrapper.classList.add('collapsed');
+                    moreBtn.textContent = 'More...';
+                }
+            });
+        }
     }
 
     // Handle image loading errors
