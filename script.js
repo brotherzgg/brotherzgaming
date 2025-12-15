@@ -1,6 +1,6 @@
 // Configuration
 const CONFIG = {
-    API_URL: 'https://pixlcore.pages.dev/Mod_Data.json',
+    API_URL: 'https://pixlcore.pages.dev/Mod_Datas.json',
     CORS_PROXY: 'https://api.allorigins.win/get?url=',
     CORS_PROXY: 'https://api.allorigins.win/get?url=',
     // LOADING_DELAY removed for seamless experience
